@@ -159,3 +159,65 @@ export const enrollInCourse = async (req, res) => {
     })
   }
 }
+
+// GET /api/courses/id/:id
+export const getCourseById = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const course = await Course.findById(id)
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found',
+      })
+    }
+
+    const modules = await Module.find({ course: course._id })
+      .select('title description order totalLessons isPublished')
+      .sort({ order: 1 })
+
+    const modulesWithLessons = await Promise.all(
+      modules.map(async (module) => {
+        const lessons = await Lesson.find({ module: module._id })
+          .select('title order duration isFree thumbnail isPublished')
+          .sort({ order: 1 })
+        return { ...module.toObject(), lessons }
+      })
+    )
+
+    let isEnrolled = false
+    let progress = null
+
+    if (req.user) {
+      const enrollment = await Enrollment.findOne({
+        student: req.user._id,
+        course: course._id,
+      })
+      isEnrolled = !!enrollment
+      if (isEnrolled) {
+        progress = await Progress.findOne({
+          student: req.user._id,
+          course: course._id,
+        })
+      }
+    }
+
+    res.json({
+      success: true,
+      course: {
+        ...course.toObject(),
+        modules: modulesWithLessons,
+      },
+      isEnrolled,
+      progress,
+    })
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: err.message,
+    })
+  }
+}

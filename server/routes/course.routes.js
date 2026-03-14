@@ -2,17 +2,16 @@ import express from 'express'
 import {
   getAllCourses,
   getCourseBySlug,
+  getCourseById,
   enrollInCourse,
 } from '../controllers/course.controller.js'
-import { protect } from '../middleware/auth.middleware.js'
+import { protect, optionalAuth } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
 
-// Public routes
 router.get('/', getAllCourses)
-router.get('/:slug', getCourseBySlug)
-
-// Protected routes — must be logged in
+router.get('/id/:id', optionalAuth, getCourseById)  // ← new route
+router.get('/:slug', optionalAuth, getCourseBySlug)
 router.post('/:id/enroll', protect, enrollInCourse)
 
 export default router
