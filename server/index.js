@@ -4,7 +4,9 @@ import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import authRoutes from './routes/auth.routes.js'
-import courseRoutes from './routes/course.routes.js'  // 👈 add this
+import courseRoutes from './routes/course.routes.js'
+import lessonRoutes from './routes/lesson.routes.js'
+import progressRoutes from './routes/progress.routes.js'
 
 dotenv.config()
 
@@ -18,7 +20,9 @@ app.use(express.urlencoded({ extended: true }))
 
 // Routes
 app.use('/api/auth', authRoutes)
-app.use('/api/courses', courseRoutes)  // 👈 add this
+app.use('/api/courses', courseRoutes)
+app.use('/api/lessons', lessonRoutes)
+app.use('/api/progress', progressRoutes)
 
 app.get('/', (req, res) => {
   res.json({
