@@ -65,7 +65,6 @@ const Navbar = () => {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-3 py-2 rounded-xl transition-all"
                 >
-                  {/* Avatar */}
                   <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                     {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
@@ -88,12 +87,10 @@ const Navbar = () => {
                 <AnimatePresence>
                   {dropdownOpen && (
                     <>
-                      {/* Backdrop */}
                       <div
                         className="fixed inset-0 z-10"
                         onClick={() => setDropdownOpen(false)}
                       />
-
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: -8 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -127,6 +124,7 @@ const Navbar = () => {
                           {[
                             { to: '/dashboard', icon: '📊', label: 'Dashboard' },
                             { to: '/profile', icon: '👤', label: 'Profile' },
+                            { to: '/submissions', icon: '📝', label: 'My Submissions' },
                             { to: '/courses', icon: '📚', label: 'Browse Courses' },
                           ].map(item => (
                             <Link
@@ -231,6 +229,19 @@ const Navbar = () => {
                       }
                     >
                       👤 Profile
+                    </NavLink>
+                    <NavLink
+                      to="/submissions"
+                      onClick={() => setMobileOpen(false)}
+                      className={({ isActive }) =>
+                        `block px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                          isActive
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                        }`
+                      }
+                    >
+                      📝 My Submissions
                     </NavLink>
                     <button
                       onClick={handleLogout}

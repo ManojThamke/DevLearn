@@ -13,6 +13,7 @@ import NotFound from './pages/NotFound'
 import ProfilePage from './pages/ProfilePage'
 import ProjectSubmitPage from './pages/ProjectSubmitPage'
 import SubmissionsPage from './pages/SubmissionPage'
+import SubmissionDetailPage from './pages/SubmissionDetailPage'
 
 // Components
 import Navbar from './components/layout/Navbar'
@@ -97,7 +98,14 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="/submissions/:id"
+            element={
+              <ProtectedRoute>
+                <SubmissionDetailPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* ── 404 ────────────────────────────────────── */}
           <Route path="*" element={<NotFound />} />
