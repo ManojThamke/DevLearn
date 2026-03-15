@@ -1,6 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+import dotenv from 'dotenv'
+dotenv.config()
 
 const SYSTEM_PROMPT = `You are DevLearn AI — a friendly and expert coding assistant 
 built into the DevLearn platform. You help students learn React.js, JavaScript, 
@@ -18,27 +17,43 @@ Rules:
 - Be encouraging and friendly — students are learning
 - Keep answers concise but complete
 - Format code in markdown code blocks
-- If asked about something unrelated to coding, politely redirect
+- If asked about something unrelated to coding politely redirect
 - Always end with a follow up question or encouragement`
 
 export const askAI = async (messages) => {
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    systemInstruction: SYSTEM_PROMPT,
-  })
+  const apiKey = process.env.GEMINI_API_KEY
 
-  // Convert messages to Gemini format
-  // Gemini uses 'user' and 'model' instead of 'user' and 'assistant'
-  const history = messages.slice(0, -1).map(msg => ({
+  const contents = messages.map(msg => ({
     role: msg.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: msg.content }],
   }))
 
-  // Last message is the current user input
-  const lastMessage = messages[messages.length - 1]
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`
 
-  const chat = model.startChat({ history })
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: {
+        parts: [{ text: SYSTEM_PROMPT }]
+      },
+      contents,
+      generationConfig: {
+        maxOutputTokens: 1024,
+        temperature: 0.7,
+      },
+    }),
+  })
 
-  const result = await chat.sendMessage(lastMessage.content)
-  return result.response.text()
+  const data = await response.json()
+
+  if (!response.ok) {
+    console.error('Gemini error:', data?.error?.message)
+    throw new Error(data?.error?.message || 'Gemini API failed')
+  }
+
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
+  if (!text) throw new Error('No response from Gemini')
+
+  return text
 }

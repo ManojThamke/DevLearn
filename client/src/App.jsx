@@ -10,6 +10,9 @@ import CourseDetail from './pages/CourseDetail'
 import Dashboard from './pages/Dashboard'
 import LessonPage from './pages/LessonPage'
 import NotFound from './pages/NotFound'
+import ProfilePage from './pages/ProfilePage'
+import ProjectSubmitPage from './pages/ProjectSubmitPage'
+import SubmissionsPage from './pages/SubmissionPage'
 
 // Components
 import Navbar from './components/layout/Navbar'
@@ -68,6 +71,33 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/submit/:projectId"
+            element={
+              <ProtectedRoute>
+                <ProjectSubmitPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/submissions"
+            element={
+              <ProtectedRoute>
+                <SubmissionsPage />
+              </ProtectedRoute>
+            }
+          />
+
 
           {/* ── 404 ────────────────────────────────────── */}
           <Route path="*" element={<NotFound />} />

@@ -37,7 +37,6 @@ const ModuleItem = ({ module, index, isEnrolled, progress }) => {
           </p>
         </div>
 
-        {/* Module completion badge */}
         {isEnrolled && module.lessons?.length > 0 && (
           <span className="text-xs text-gray-400 mr-2">
             {module.lessons.filter(l =>
@@ -65,10 +64,10 @@ const ModuleItem = ({ module, index, isEnrolled, progress }) => {
             className="overflow-hidden"
           >
             <div className="border-t border-gray-100">
+
+              {/* Lessons List */}
               {module.lessons?.map((lesson, i) => {
-                const isCompleted = completedLessons.includes(
-                  lesson._id.toString()
-                )
+                const isCompleted = completedLessons.includes(lesson._id.toString())
                 const isFree = lesson.isFree
 
                 return (
@@ -76,7 +75,6 @@ const ModuleItem = ({ module, index, isEnrolled, progress }) => {
                     key={lesson._id}
                     className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
                   >
-                    {/* Status icon */}
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-sm ${
                       isCompleted
                         ? 'bg-green-100 text-green-600'
@@ -87,7 +85,6 @@ const ModuleItem = ({ module, index, isEnrolled, progress }) => {
                       {isCompleted ? '✓' : isEnrolled || isFree ? '▶' : '🔒'}
                     </div>
 
-                    {/* Lesson info */}
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium truncate ${
                         isCompleted ? 'text-green-700' :
@@ -101,14 +98,12 @@ const ModuleItem = ({ module, index, isEnrolled, progress }) => {
                       </p>
                     </div>
 
-                    {/* Action button */}
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {isFree && !isEnrolled && (
                         <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
                           Free
                         </span>
                       )}
-
                       {isEnrolled ? (
                         <Link
                           to={'/lessons/' + lesson._id}
@@ -136,6 +131,29 @@ const ModuleItem = ({ module, index, isEnrolled, progress }) => {
                   </div>
                 )
               })}
+
+              {/* ── Submit Project Button ──────────────────────── */}
+              {isEnrolled && (
+                <div className="px-5 py-4 bg-gradient-to-r from-indigo-50 to-cyan-50 border-t border-indigo-100">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-indigo-800">
+                        🚀 Module Project
+                      </p>
+                      <p className="text-xs text-indigo-500 mt-0.5">
+                        Complete lessons then submit for AI evaluation
+                      </p>
+                    </div>
+                    <Link
+                      to={'/submit/' + module._id}
+                      className="flex-shrink-0 flex items-center gap-1.5 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition-all"
+                    >
+                      Submit →
+                    </Link>
+                  </div>
+                </div>
+              )}
+
             </div>
           </motion.div>
         )}
@@ -175,10 +193,7 @@ const CourseDetail = () => {
   }, [slug])
 
   const handleEnroll = async () => {
-    if (!isLoggedIn) {
-      navigate('/register')
-      return
-    }
+    if (!isLoggedIn) { navigate('/register'); return }
     try {
       setEnrolling(true)
       await api.post('/courses/' + course._id + '/enroll')
@@ -197,7 +212,6 @@ const CourseDetail = () => {
     advanced: 'bg-red-100 text-red-700',
   }
 
-  // Loading
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -216,7 +230,6 @@ const CourseDetail = () => {
     )
   }
 
-  // Error
   if (error || !course) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
@@ -246,7 +259,6 @@ const CourseDetail = () => {
         <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-6xl mx-auto">
-          {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-gray-400 text-sm mb-6">
             <Link to="/" className="hover:text-white transition-colors">Home</Link>
             <span>/</span>
@@ -256,8 +268,6 @@ const CourseDetail = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
-            {/* Left — Course Info */}
             <div className="lg:col-span-2">
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full ${levelColors[course.level]}`}>
@@ -287,7 +297,6 @@ const CourseDetail = () => {
                 {course.description}
               </motion.p>
 
-              {/* Stats row */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -309,7 +318,7 @@ const CourseDetail = () => {
               </motion.div>
             </div>
 
-            {/* Right — Enroll Card (desktop) */}
+            {/* Enroll Card */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -379,7 +388,6 @@ const CourseDetail = () => {
                 </div>
               </div>
             </motion.div>
-
           </div>
         </div>
       </section>
@@ -388,12 +396,9 @@ const CourseDetail = () => {
       <section className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Left — Modules */}
+          {/* Modules */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Course Content
-            </h2>
-
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Content</h2>
             <div className="space-y-3">
               {course.modules?.map((module, i) => (
                 <ModuleItem
@@ -407,10 +412,10 @@ const CourseDetail = () => {
             </div>
           </div>
 
-          {/* Right — Sidebar */}
+          {/* Sidebar */}
           <div className="space-y-6">
 
-            {/* Mobile enroll card */}
+            {/* Mobile enroll */}
             <div className="lg:hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
               {isEnrolled ? (
                 <div className="space-y-3">
@@ -448,9 +453,7 @@ const CourseDetail = () => {
 
             {/* What you will learn */}
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-4">
-                What you will learn
-              </h3>
+              <h3 className="font-bold text-gray-900 mb-4">What you will learn</h3>
               <div className="space-y-2.5">
                 {[
                   'Modern JavaScript ES6+ features',

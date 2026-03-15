@@ -12,6 +12,7 @@ export const chat = async (req, res) => {
     }
 
     const recentMessages = messages.slice(-10)
+
     const reply = await askAI(recentMessages)
 
     res.json({
@@ -19,11 +20,10 @@ export const chat = async (req, res) => {
       reply,
     })
   } catch (err) {
-    // This will show us the EXACT error
     console.error('=== AI ERROR ===')
     console.error('Message:', err.message)
     console.error('Status:', err.status)
-    console.error('Full error:', err)
+    console.error(err)
     console.error('================')
 
     res.status(500).json({

@@ -3,36 +3,71 @@ import mongoose from 'mongoose'
 import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+
+// Routes
 import authRoutes from './routes/auth.routes.js'
 import courseRoutes from './routes/course.routes.js'
 import lessonRoutes from './routes/lesson.routes.js'
 import progressRoutes from './routes/progress.routes.js'
+import aiRoutes from './routes/ai.routes.js'
+import profileRoutes from './routes/profile.routes.js'
+import submissionRoutes from './routes/submission.routes.js'
+import projectRoutes from './routes/project.routes.js'
 
 dotenv.config()
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const app = express()
 const PORT = process.env.PORT || 5000
 
+// ─── Security Middleware ───────────────────────────────────────────
 app.use(helmet())
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}))
 
-// Routes
+// ─── Body Parsing Middleware ───────────────────────────────────────
+app.use(express.json({ limit: '100mb' }))
+app.use(express.urlencoded({ extended: true, limit: '100mb' }))
+
+// ─── Static Files ──────────────────────────────────────────────────
+app.use('/uploads', express.static(join(__dirname, 'uploads')))
+
+// ─── API Routes ────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/lessons', lessonRoutes)
 app.use('/api/progress', progressRoutes)
+app.use('/api/ai', aiRoutes)
+app.use('/api/profile', profileRoutes)
+app.use('/api/submissions', submissionRoutes)
+app.use('/api/projects', projectRoutes)
 
+// ─── Health Check ──────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
     success: true,
     message: 'DevLearn API is running',
     version: '1.0.0',
     environment: process.env.NODE_ENV || 'development',
+    routes: [
+      '/api/auth',
+      '/api/courses',
+      '/api/lessons',
+      '/api/progress',
+      '/api/ai',
+      '/api/profile',
+      '/api/submissions',
+    ],
   })
 })
 
+// ─── 404 Handler ───────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -40,6 +75,7 @@ app.use((req, res) => {
   })
 })
 
+// ─── Global Error Handler ──────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error('[ERROR] ' + err.message)
   res.status(err.status || 500).json({
@@ -48,6 +84,7 @@ app.use((err, req, res, next) => {
   })
 })
 
+// ─── Start Server ──────────────────────────────────────────────────
 const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI)
