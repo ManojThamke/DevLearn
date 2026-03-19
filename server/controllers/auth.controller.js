@@ -7,7 +7,7 @@ const generateTokens = (userId) => {
   const accessToken = jwt.sign(
     { id: userId },
     process.env.JWT_SECRET,
-    { expiresIn: '15m' }
+    { expiresIn: '120m' }
   )
   const refreshToken = jwt.sign(
     { id: userId },
@@ -147,6 +147,54 @@ export const logout = (req, res) => {
     success: true,
     message: 'Logged out successfully'
   })
+}
+
+// POST /api/auth/refresh
+export const refreshToken = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'No refresh token provided'
+      })
+    }
+
+    // Verify refresh token
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
+
+    // Check if user still exists
+    const user = await User.findById(decoded.id)
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found'
+      })
+    }
+
+    // Generate new tokens
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user._id)
+
+    // Set new refresh token cookie
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    res.json({
+      success: true,
+      accessToken,
+    })
+  } catch (err) {
+    res.clearCookie('refreshToken')
+    res.status(401).json({
+      success: false,
+      message: 'Invalid or expired refresh token'
+    })
+  }
 }
 
 // GET /api/auth/me

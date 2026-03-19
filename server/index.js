@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
@@ -15,6 +16,13 @@ import aiRoutes from './routes/ai.routes.js'
 import profileRoutes from './routes/profile.routes.js'
 import submissionRoutes from './routes/submission.routes.js'
 import projectRoutes from './routes/project.routes.js'
+import badgeRoutes from './routes/badge.routes.js'
+import certificateRoutes from './routes/certificate.routes.js'
+
+// Workers
+import { startWorker } from './workers/evaluation.worker.js'
+
+
 
 dotenv.config()
 
@@ -34,6 +42,7 @@ app.use(cors({
 // ─── Body Parsing Middleware ───────────────────────────────────────
 app.use(express.json({ limit: '100mb' }))
 app.use(express.urlencoded({ extended: true, limit: '100mb' }))
+app.use(cookieParser())
 
 // ─── Static Files ──────────────────────────────────────────────────
 app.use('/uploads', express.static(join(__dirname, 'uploads')))
@@ -47,6 +56,8 @@ app.use('/api/ai', aiRoutes)
 app.use('/api/profile', profileRoutes)
 app.use('/api/submissions', submissionRoutes)
 app.use('/api/projects', projectRoutes)
+app.use('/api/badges', badgeRoutes)
+app.use('/api/certificates', certificateRoutes)
 
 // ─── Health Check ──────────────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -63,6 +74,9 @@ app.get('/', (req, res) => {
       '/api/ai',
       '/api/profile',
       '/api/submissions',
+      '/api/projects',
+      '/api/badges',
+      '/api/certificates',
     ],
   })
 })
@@ -89,6 +103,15 @@ const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI)
     console.log('✅ MongoDB connected')
+
+    // Start evaluation queue worker
+    try {
+      startWorker()
+      console.log('✅ Evaluation queue worker started')
+    } catch (workerErr) {
+      console.error('⚠️ Evaluation worker failed to start (Redis may be down):', workerErr.message)
+    }
+
     app.listen(PORT, () => {
       console.log('🚀 Server running on http://localhost:' + PORT)
       console.log('🌍 Environment: ' + (process.env.NODE_ENV || 'development'))

@@ -125,6 +125,8 @@ const Navbar = () => {
                             { to: '/dashboard', icon: '📊', label: 'Dashboard' },
                             { to: '/profile', icon: '👤', label: 'Profile' },
                             { to: '/submissions', icon: '📝', label: 'My Submissions' },
+                            { to: '/badges', icon: '🏅', label: 'Badges' },
+                            { to: '/certificates', icon: '📜', label: 'Certificates' },
                             { to: '/courses', icon: '📚', label: 'Browse Courses' },
                           ].map(item => (
                             <Link
@@ -242,6 +244,32 @@ const Navbar = () => {
                       }
                     >
                       📝 My Submissions
+                    </NavLink>
+                    <NavLink
+                      to="/badges"
+                      onClick={() => setMobileOpen(false)}
+                      className={({ isActive }) =>
+                        `block px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                          isActive
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                        }`
+                      }
+                    >
+                      🏅 Badges
+                    </NavLink>
+                    <NavLink
+                      to="/certificates"
+                      onClick={() => setMobileOpen(false)}
+                      className={({ isActive }) =>
+                        `block px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                          isActive
+                            ? 'bg-indigo-50 text-indigo-600'
+                            : 'text-gray-600 hover:bg-gray-50'
+                        }`
+                      }
+                    >
+                      📜 Certificates
                     </NavLink>
                     <button
                       onClick={handleLogout}

@@ -1,0 +1,246 @@
+╔══════════════════════════════════════════════════════════════════╗
+║              DEVLEARN — COMPLETE BUILD PLAN                      ║
+║              Full Stack AI Learning Platform                     ║
+╚══════════════════════════════════════════════════════════════════╝
+
+GITHUB: https://github.com/ManojThamke/DevLearn.git
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TECH STACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Frontend:  React + Vite + TailwindCSS + Framer Motion + React Router + Axios
+Backend:   Node.js + Express + MongoDB Atlas + JWT + bcryptjs + Multer
+AI:        Google Gemini 2.5 Flash (model: gemini-2.5-flash)
+Queue:     Bull + Redis (ioredis)
+Docker:    dockerode + node:18-alpine image
+GitHub:    @octokit/rest
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPLETED ✅
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BACKEND:
+✅ server/index.js                         Express server + all routes
+✅ server/.env                             All env variables
+✅ server/models/User.model.js
+✅ server/models/Course.model.js
+✅ server/models/Module.model.js
+✅ server/models/Lesson.model.js
+✅ server/models/Project.model.js
+✅ server/models/Submission.model.js
+✅ server/models/Score.model.js
+✅ server/models/Progress.model.js
+✅ server/models/Enrollment.model.js
+✅ server/controllers/auth.controller.js
+✅ server/controllers/course.controller.js  getCourseById added
+✅ server/controllers/lesson.controller.js
+✅ server/controllers/progress.controller.js
+✅ server/controllers/profile.controller.js
+✅ server/controllers/submission.controller.js
+✅ server/controllers/ai.controller.js
+✅ server/routes/auth.routes.js
+✅ server/routes/course.routes.js           optionalAuth on slug route
+✅ server/routes/lesson.routes.js
+✅ server/routes/progress.routes.js
+✅ server/routes/profile.routes.js
+✅ server/routes/submission.routes.js
+✅ server/routes/project.routes.js          /module/:id BEFORE /:id
+✅ server/routes/ai.routes.js
+✅ server/middleware/auth.middleware.js      protect + optionalAuth + adminOnly
+✅ server/middleware/upload.middleware.js    multer ZIP 100MB
+✅ server/services/ai.service.js            Gemini 2.5 Flash direct fetch
+✅ server/seed.js                           1 course, 4 modules, 16 lessons, 4 projects
+✅ server/data/lessons.js
+
+FRONTEND:
+✅ client/src/main.jsx
+✅ client/src/App.jsx                       All routes + ProtectedRoute
+✅ client/src/context/AuthContext.jsx
+✅ client/src/services/api.js               Axios + JWT interceptor
+✅ client/src/components/layout/Navbar.jsx  Dropdown with My Submissions
+✅ client/src/components/layout/Footer.jsx
+✅ client/src/components/common/AIAssistant.jsx  Gemini powered chat
+✅ client/src/components/common/Spinner.jsx
+✅ client/src/pages/LandingPage.jsx
+✅ client/src/pages/LoginPage.jsx
+✅ client/src/pages/RegisterPage.jsx
+✅ client/src/pages/CourseCatalog.jsx
+✅ client/src/pages/CourseDetail.jsx        Submit button per module
+✅ client/src/pages/LessonPage.jsx          Dark mode + reading progress
+✅ client/src/pages/Dashboard.jsx
+✅ client/src/pages/ProfilePage.jsx         3 avatar tabs
+✅ client/src/pages/ProjectSubmitPage.jsx   GitHub + ZIP 100MB
+✅ client/src/pages/SubmissionsPage.jsx     Filter + score bars
+✅ client/src/pages/SubmissionDetailPage.jsx Score rings + AI feedback
+✅ client/src/pages/NotFound.jsx
+
+ROUTES in App.jsx:
+✅ /                    LandingPage
+✅ /login               LoginPage
+✅ /register            RegisterPage
+✅ /courses             CourseCatalog
+✅ /courses/:slug       CourseDetail
+✅ /dashboard           Dashboard (protected)
+✅ /profile             ProfilePage (protected)
+✅ /lessons/:id         LessonPage (protected, no navbar)
+✅ /submit/:projectId   ProjectSubmitPage (protected)
+✅ /submissions         SubmissionsPage (protected)
+✅ /submissions/:id     SubmissionDetailPage (protected)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REMAINING TO BUILD ❌
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 2 + 3 — AI CODE EVALUATION (NEXT)
+─────────────────────────────────────────
+
+PACKAGES TO INSTALL:
+  cd server
+  npm install bull ioredis adm-zip @octokit/rest dockerode
+
+DOCKER SETUP:
+  1. Install Docker Desktop from docker.com
+  2. Run: docker pull node:18-alpine
+  3. Start Redis: docker run -d --name redis -p 6379:6379 redis:alpine
+
+ENV VARIABLES TO ADD in server/.env:
+  GEMINI_API_KEY_1=your_main_key
+  GEMINI_API_KEY_2=your_jio_key_1
+  GEMINI_API_KEY_3=your_jio_key_2
+  GEMINI_API_KEY_4=your_student_key
+  REDIS_URL=redis://localhost:6379
+  GITHUB_TOKEN=your_github_personal_access_token
+  DOCKER_ENABLED=true
+  DOCKER_TIMEOUT=60000
+
+FILES TO CREATE:
+  ❌ server/services/gemini.service.js
+     → Round robin across 4 API keys
+     → Tracks current key index
+     → Rotates on each request
+     → Falls back if one key fails
+
+  ❌ server/services/github.service.js
+     → Takes GitHub repo URL
+     → Uses @octokit/rest to fetch file tree
+     → Downloads README.md, package.json
+     → Downloads all .js .jsx .ts .tsx files
+     → Returns combined code string
+
+  ❌ server/services/docker.service.js
+     → Creates isolated container (node:18-alpine)
+     → Copies student code inside
+     → Runs: npm install && npm test
+     → Captures stdout and stderr
+     → Destroys container after 60 seconds
+     → Returns test results
+
+  ❌ server/services/evaluation.service.js
+     → Orchestrates the full pipeline:
+       1. Get submission from DB
+       2. Fetch code (GitHub API or ZIP extract)
+       3. Run in Docker container
+       4. Send code + test results to Gemini
+       5. Parse Gemini JSON response
+       6. Save Score to DB
+       7. Update submission status to completed
+
+  ❌ server/workers/evaluation.worker.js
+     → Bull queue worker
+     → Listens for new evaluation jobs
+     → Calls evaluation.service.js
+     → Handles errors and retries
+     → Updates submission status on failure
+
+  ❌ server/queues/evaluation.queue.js
+     → Bull queue setup
+     → Redis connection
+     → Queue configuration (retries, timeout)
+
+FLOW:
+  createSubmission() → adds job to Bull queue
+  worker picks job → fetches code → runs Docker
+  → Gemini evaluates → Score saved → status: completed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE 4 — DEPLOYMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Frontend → Vercel
+    - Connect GitHub repo
+    - Root: client/
+    - Build: npm run build
+    - Output: dist/
+    - Env: VITE_API_URL=https://your-railway-url.com/api
+
+  Backend → Railway
+    - Connect GitHub repo
+    - Root: server/
+    - Start: node index.js
+    - Add all env variables
+    - Add Redis plugin (free)
+    - Add Docker support
+
+  Database → MongoDB Atlas (already done)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY TECHNICAL NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Gemini model: gemini-2.5-flash (ONLY working model for our key)
+  2. AI service uses direct fetch to v1beta REST API (not SDK)
+  3. bcryptjs used (NOT bcrypt — caused "next is not a function" error)
+  4. Password hashed in controller directly (NOT in model pre-save hook)
+  5. getCourseBySlug uses optionalAuth (not protect) for logged out users
+  6. LessonPage fetches course via /api/courses/id/:id (not slug)
+  7. ZIP uploads stored in server/uploads/ folder
+  8. Project routes: /module/:moduleId MUST come BEFORE /:id
+  9. Submit button links to /submit/MODULE_ID (not project ID)
+  10. ProjectSubmitPage fetches project by module ID then uses project._id
+  11. SubmissionDetailPage route: /submissions/:id
+  12. Avatar stored as default:1 through default:8 in User.avatarUrl
+  13. Navbar hides on /lessons/* routes
+  14. ZIP file size limit: 100MB (upload.middleware + index.js + frontend)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TO CONTINUE IN NEW CHAT — PASTE THIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+I am building DevLearn — a full stack AI powered coding education
+platform. GitHub: https://github.com/ManojThamke/DevLearn.git
+
+Stack: React + Vite + TailwindCSS (client)
+       Node.js + Express + MongoDB Atlas (server)
+       Google Gemini 2.5 Flash — model: gemini-2.5-flash
+       Bull + Redis for queue
+       Docker for code execution
+
+Everything in COMPLETED section above is done.
+
+Next task: Build Phase 2 + Phase 3 together.
+
+Files to create:
+1. server/queues/evaluation.queue.js       Bull + Redis setup
+2. server/services/gemini.service.js       Round robin 4 API keys
+3. server/services/github.service.js       Fetch code from GitHub API
+4. server/services/docker.service.js       Run code in Docker container
+5. server/services/evaluation.service.js   Orchestrate full pipeline
+6. server/workers/evaluation.worker.js     Bull queue worker
+
+Packages already installed:
+bull ioredis adm-zip @octokit/rest dockerode
+
+Docker Desktop installed, Redis running on localhost:6379,
+node:18-alpine image pulled.
+
+ENV variables added:
+GEMINI_API_KEY_1, GEMINI_API_KEY_2, GEMINI_API_KEY_3, GEMINI_API_KEY_4
+REDIS_URL=redis://localhost:6379
+GITHUB_TOKEN=your_token
+DOCKER_ENABLED=true
+DOCKER_TIMEOUT=60000
+
+Start building from file 1.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

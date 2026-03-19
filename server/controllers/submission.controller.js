@@ -1,6 +1,7 @@
 import Submission from '../models/Submission.model.js'
 import Project from '../models/Project.model.js'
 import Score from '../models/Score.model.js'
+import evaluationQueue from '../queues/evaluation.queue.js'
 
 // POST /api/submissions
 export const createSubmission = async (req, res) => {
@@ -41,6 +42,16 @@ export const createSubmission = async (req, res) => {
       status: 'pending',
       attemptNumber: previousCount + 1,
     })
+
+    // Add evaluation job to queue
+    try {
+      await evaluationQueue.add({ submissionId: submission._id.toString() })
+      submission.status = 'queued'
+      await submission.save()
+    } catch (queueErr) {
+      console.error('[Submission] Failed to queue evaluation:', queueErr.message)
+      // Submission stays as 'pending' — can be retried later
+    }
 
     res.status(201).json({
       success: true,
@@ -84,6 +95,15 @@ export const handleZipUpload = async (req, res) => {
       status: 'pending',
       attemptNumber: previousCount + 1,
     })
+
+    // Add evaluation job to queue
+    try {
+      await evaluationQueue.add({ submissionId: submission._id.toString() })
+      submission.status = 'queued'
+      await submission.save()
+    } catch (queueErr) {
+      console.error('[Submission] Failed to queue ZIP evaluation:', queueErr.message)
+    }
 
     res.status(201).json({
       success: true,

@@ -14,6 +14,9 @@ import ProfilePage from './pages/ProfilePage'
 import ProjectSubmitPage from './pages/ProjectSubmitPage'
 import SubmissionsPage from './pages/SubmissionPage'
 import SubmissionDetailPage from './pages/SubmissionDetailPage'
+import BadgesPage from './pages/BadgesPage'
+import CertificatesPage from './pages/CertificatesPage'
+import CertificateVerifyPage from './pages/CertificateVerifyPage'
 
 // Components
 import Navbar from './components/layout/Navbar'
@@ -54,6 +57,7 @@ const App = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/courses" element={<CourseCatalog />} />
           <Route path="/courses/:slug" element={<CourseDetail />} />
+          <Route path="/verify/:certificateId" element={<CertificateVerifyPage />} />
 
           {/* ── Protected Routes ───────────────────────── */}
           <Route
@@ -103,6 +107,22 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <SubmissionDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/badges"
+            element={
+              <ProtectedRoute>
+                <BadgesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/certificates"
+            element={
+              <ProtectedRoute>
+                <CertificatesPage />
               </ProtectedRoute>
             }
           />

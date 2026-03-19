@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
+import api from '../services/api'
 
 // ── Floating Particles ─────────────────────────────────────────────
 const Particles = () => (
@@ -96,11 +97,11 @@ const AnimatedCounter = ({ target, suffix = '' }) => {
 }
 
 // ── Data ───────────────────────────────────────────────────────────
-const stats = [
-  { label: 'Lessons', value: 16, suffix: '+' },
-  { label: 'Projects', value: 4, suffix: '' },
-  { label: 'Modules', value: 4, suffix: '' },
-  { label: 'Students', value: 100, suffix: '+' },
+const defaultStats = [
+  { label: 'Lessons', value: 0, suffix: '+' },
+  { label: 'Projects', value: 0, suffix: '' },
+  { label: 'Modules', value: 0, suffix: '' },
+  { label: 'Students', value: 0, suffix: '+' },
 ]
 
 const features = [
@@ -286,6 +287,28 @@ const Newsletter = () => {
 
 // ── Main Page ──────────────────────────────────────────────────────
 const LandingPage = () => {
+  const [stats, setStats] = useState(defaultStats)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/courses/stats')
+        if (response.data.success) {
+          const { lessons, modules, projects, students } = response.data.stats
+          setStats([
+            { label: 'Lessons', value: lessons, suffix: '+' },
+            { label: 'Projects', value: projects, suffix: '' },
+            { label: 'Modules', value: modules, suffix: '' },
+            { label: 'Students', value: students, suffix: '+' },
+          ])
+        }
+      } catch (err) {
+        console.error('Failed to fetch stats:', err)
+      }
+    }
+    fetchStats()
+  }, [])
+
   return (
     <div className="overflow-x-hidden">
 

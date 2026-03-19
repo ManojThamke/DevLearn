@@ -427,7 +427,9 @@ const LessonPage = () => {
 
         window.scrollTo(0, 0)
       } catch (err) {
-        setError('Lesson not found')
+        const message = err.response?.data?.message || 'Lesson not found'
+        const status = err.response?.status
+        setError({ message, status })
       } finally {
         setLoading(false)
       }
@@ -482,11 +484,34 @@ const LessonPage = () => {
   }
 
   if (error || !lesson) {
+    const errorMessage = error?.message || 'Lesson not found'
+    const isAuthError = error?.status === 401
+    const isEnrollError = error?.status === 403
+
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${dark ? 'bg-gray-900' : 'bg-white'}`}>
-        <p className="text-5xl mb-4">😕</p>
-        <h2 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-800'} mb-4`}>Lesson not found</h2>
-        <Link to="/courses" className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl">Browse Courses</Link>
+        <p className="text-5xl mb-4">{isAuthError ? '🔐' : isEnrollError ? '📚' : '😕'}</p>
+        <h2 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-800'} mb-2`}>
+          {isAuthError ? 'Login Required' : isEnrollError ? 'Enrollment Required' : 'Lesson Not Found'}
+        </h2>
+        <p className={`${dark ? 'text-gray-400' : 'text-gray-500'} mb-6 text-center max-w-md`}>
+          {errorMessage}
+        </p>
+        <div className="flex gap-3">
+          {isAuthError ? (
+            <Link to="/login" className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors">
+              Login to Continue
+            </Link>
+          ) : isEnrollError ? (
+            <Link to="/courses" className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors">
+              Enroll in Course
+            </Link>
+          ) : (
+            <Link to="/courses" className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors">
+              Browse Courses
+            </Link>
+          )}
+        </div>
       </div>
     )
   }

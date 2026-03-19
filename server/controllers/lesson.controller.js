@@ -3,6 +3,8 @@ import Progress from '../models/Progress.model.js'
 import Enrollment from '../models/Enrollment.model.js'
 import Course from '../models/Course.model.js'
 import Module from '../models/Module.model.js'
+import { checkLessonBadges, checkModuleBadges } from './badge.controller.js'
+import { checkAndIssueCertificate } from './certificate.controller.js'
 
 // GET /api/lessons/:id
 // Protected — must be enrolled (except free lessons)
@@ -150,6 +152,17 @@ export const completeLesson = async (req, res) => {
     }
 
     await progress.save()
+
+    // Check and award badges
+    try {
+      await checkLessonBadges(studentId)
+      if (moduleCompleted) {
+        await checkModuleBadges(studentId, lesson.course)
+        await checkAndIssueCertificate(studentId, lesson.course)
+      }
+    } catch (badgeErr) {
+      console.error('Badge/certificate check error:', badgeErr.message)
+    }
 
     res.json({
       success: true,

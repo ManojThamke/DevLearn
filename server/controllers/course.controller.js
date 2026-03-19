@@ -3,6 +3,8 @@ import Module from '../models/Module.model.js'
 import Lesson from '../models/Lesson.model.js'
 import Progress from '../models/Progress.model.js'
 import Enrollment from '../models/Enrollment.model.js'
+import Project from '../models/Project.model.js'
+import User from '../models/User.model.js'
 
 // GET /api/courses
 // Public — anyone can see published courses
@@ -212,6 +214,40 @@ export const getCourseById = async (req, res) => {
       },
       isEnrolled,
       progress,
+    })
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: err.message,
+    })
+  }
+}
+
+// GET /api/courses/stats
+// Public — get platform statistics
+export const getPlatformStats = async (req, res) => {
+  try {
+    // Count total published lessons
+    const totalLessons = await Lesson.countDocuments({ isPublished: true })
+
+    // Count total published modules
+    const totalModules = await Module.countDocuments({ isPublished: true })
+
+    // Count total published projects
+    const totalProjects = await Project.countDocuments({ isPublished: true })
+
+    // Count total students (users with role 'student')
+    const totalStudents = await User.countDocuments({ role: 'student' })
+
+    res.json({
+      success: true,
+      stats: {
+        lessons: totalLessons,
+        modules: totalModules,
+        projects: totalProjects,
+        students: totalStudents,
+      },
     })
   } catch (err) {
     res.status(500).json({

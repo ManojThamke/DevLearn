@@ -4,6 +4,22 @@ import Course from './models/Course.model.js'
 import Module from './models/Module.model.js'
 import Lesson from './models/Lesson.model.js'
 import Project from './models/Project.model.js'
+import Enrollment from './models/Enrollment.model.js'
+import Progress from './models/Progress.model.js'
+import Submission from './models/Submission.model.js'
+import Score from './models/Score.model.js'
+import Badge from './models/Badge.model.js'
+import UserBadge from './models/UserBadge.model.js'
+import Certificate from './models/Certificate.model.js'
+import { module1Lessons } from './data/module1.lessons.js'
+import { module2Lessons } from './data/module2.lessons.js'
+import { module3Lessons } from './data/module3.lessons.js'
+import { module4Lessons } from './data/module4.lessons.js'
+import { module5Lessons } from './data/module5.lessons.js'
+import { module6Lessons } from './data/module6.lessons.js'
+import { module7Lessons } from './data/module7.lessons.js'
+import { module8Lessons } from './data/module8.lessons.js'
+import { badgeDefinitions } from './data/badgeDefinitions.js'
 
 dotenv.config()
 
@@ -12,34 +28,58 @@ const JS_LESSON_IMG = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c
 const REACT_LESSON_IMG = 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&q=80'
 const HOOKS_LESSON_IMG = 'https://images.unsplash.com/photo-1593720213428-28a5b9e94613?w=800&q=80'
 const ADV_LESSON_IMG = 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80'
+const API_IMG = 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80'
+const STATE_IMG = 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=800&q=80'
+const AUTH_IMG = 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800&q=80'
+const DEPLOY_IMG = 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=800&q=80'
 const MOVIE_IMG = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80'
 const TODO_IMG = 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&q=80'
 const WEATHER_IMG = 'https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800&q=80'
 const BLOG_IMG = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&q=80'
+const GITHUB_IMG = 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800&q=80'
+const ECOMMERCE_IMG = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80'
+const DASHBOARD_IMG = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'
+const FULLSTACK_IMG = 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&q=80'
+const DEVCONNECT_IMG = 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80'
+const SHOPEASE_IMG = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80'
 
 const seed = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI)
-    console.log('MongoDB connected')
+    console.log('✅ MongoDB connected')
 
+    // ── Clear all data ───────────────────────────────────────────
     await Course.deleteMany({})
     await Module.deleteMany({})
     await Lesson.deleteMany({})
     await Project.deleteMany({})
-    console.log('Cleared existing data')
+    await Enrollment.deleteMany({})
+    await Progress.deleteMany({})
+    await Submission.deleteMany({})
+    await Score.deleteMany({})
+    await Badge.deleteMany({})
+    await UserBadge.deleteMany({})
+    await Certificate.deleteMany({})
+    console.log('🗑️  Cleared all existing data')
+
+    // ── Seed Badges ──────────────────────────────────────────────
+    for (const badge of badgeDefinitions) {
+      await Badge.create(badge)
+    }
+    console.log('🏅 Badges seeded: ' + badgeDefinitions.length)
 
     // ── Create Course ────────────────────────────────────────────
     const course = await Course.create({
-      title: 'React.js Complete Guide',
+      title: 'React Developer Complete Course',
       slug: 'react-complete-guide',
-      description: 'Master React.js from beginner to advanced level. Learn modern JavaScript, React hooks, state management, routing, and build 4 real-world projects with AI-powered evaluation.',
+      description: 'Master React.js from beginner to production. Learn JavaScript, React hooks, routing, state management, API integration, authentication, TypeScript and deployment. Build 10 real-world projects with AI-powered code evaluation.',
       thumbnail: REACT_THUMBNAIL,
       level: 'beginner',
-      tags: ['react', 'javascript', 'frontend', 'hooks', 'tailwindcss'],
+      tags: ['react', 'javascript', 'frontend', 'hooks', 'tailwindcss', 'typescript', 'redux'],
       published: true,
       instructor: new mongoose.Types.ObjectId(),
     })
-    console.log('Course created: ' + course.title)
+    console.log('\n📚 Course created: ' + course.title)
 
     let totalLessons = 0
 
@@ -54,421 +94,24 @@ const seed = async () => {
       totalLessons: 4,
       isPublished: true,
     })
-    console.log('Module 1 created')
+    console.log('\n📦 Module 1: JavaScript for React')
 
-    await Lesson.create({
-      title: 'ES6+ Basics',
-      order: 1,
-      duration: 15,
-      isFree: true,
-      thumbnail: JS_LESSON_IMG,
-      module: mod1._id,
-      course: course._id,
-      isPublished: true,
-      videoUrl: '',
-      content: [
-        '# ES6+ Basics',
-        '',
-        '## Introduction',
-        'Before React, you need modern JavaScript. ES6 was released in 2015 and changed everything.',
-        '',
-        '## 1. let and const',
-        'Rule: never use var. Use const by default. Use let when value changes.',
-        '',
-        '```javascript',
-        'const API_URL = "https://api.devlearn.com"',
-        'const MAX_RETRIES = 3',
-        'let isLoading = true',
-        'let currentPage = 1',
-        'isLoading = false',
-        '```',
-        '',
-        '## 2. Arrow Functions',
-        '```javascript',
-        'const add = (a, b) => a + b',
-        'const double = n => n * 2',
-        'const sayHello = () => "Hello!"',
-        '```',
-        '',
-        '## 3. Template Literals',
-        'Use backticks to embed variables in strings.',
-        '```javascript',
-        'const name = "Manoj"',
-        'const score = 95',
-        'console.log("Hello " + name + ", score: " + score)',
-        '```',
-        '',
-        '## 4. Default Parameters',
-        '```javascript',
-        'const greet = (name = "Student") => "Hello " + name',
-        'greet("Manoj") // Hello Manoj',
-        'greet()        // Hello Student',
-        '```',
-        '',
-        '## Common Mistakes',
-        '1. Using var instead of const/let',
-        '2. Trying to reassign a const variable',
-        '3. Arrow function returning object without wrapping in ()',
-        '4. Using arrow functions when you need the this keyword',
-        '',
-        '## Pro Tips',
-        '1. Always use const first, switch to let only if needed',
-        '2. Use arrow functions for callbacks and event handlers',
-        '3. const arrays and objects can still be modified',
-        '4. Use UPPER_SNAKE_CASE for true constants',
-        '',
-        '## Interview Questions',
-        'Q1. Difference between var, let and const?',
-        'Answer: var is function scoped and hoisted. let is block scoped and reassignable. const is block scoped and cannot be reassigned.',
-        '',
-        'Q2. Difference between regular and arrow functions?',
-        'Answer: Arrow functions are shorter and do not have their own this binding.',
-        '',
-        'Q3. Can you modify a const array or object?',
-        'Answer: Yes. const prevents reassignment but not modification.',
-        '',
-        'Q4. What is a template literal?',
-        'Answer: Strings using backticks that allow embedded expressions and multiline text.',
-        '',
-        'Q5. What is hoisting?',
-        'Answer: JavaScript moves declarations to top of scope. var is initialized as undefined. let/const throw ReferenceError before declaration.',
-        '',
-        '## Exercises',
-        'Exercise 1 - Easy: Convert all var to const or let',
-        'Exercise 2 - Medium: Convert regular functions to arrow functions',
-        'Exercise 3 - Hard: Find and fix 5 bugs in provided code',
-        '',
-        '## Summary',
-        '- Variables: use const by default, let when reassigning',
-        '- Functions: arrow functions for modern code',
-        '- Strings: template literals instead of concatenation',
-        '- Parameters: default values instead of if checks',
-      ].join('\n'),
-    })
-    console.log('  Lesson 1: ES6+ Basics')
-    totalLessons++
-
-    await Lesson.create({
-      title: 'Destructuring & Spread Operator',
-      order: 2,
-      duration: 20,
-      isFree: true,
-      thumbnail: JS_LESSON_IMG,
-      module: mod1._id,
-      course: course._id,
-      isPublished: true,
-      videoUrl: '',
-      content: [
-        '# Destructuring and Spread Operator',
-        '',
-        '## Introduction',
-        'Two features you will use in every React component you write.',
-        'Destructuring is like unpacking a suitcase — take everything out and place it where needed.',
-        '',
-        '## 1. Array Destructuring',
-        '```javascript',
-        'const colors = ["red", "green", "blue"]',
-        'const [first, second, third] = colors',
-        '',
-        '// Skip elements',
-        'const [, second, , fourth] = [1, 2, 3, 4]',
-        '',
-        '// Default values',
-        'const [a = 0, b = 0] = [10]',
-        '',
-        '// Swap variables',
-        'let x = 1, y = 2',
-        '[x, y] = [y, x]',
-        '```',
-        '',
-        '## React Connection — useState',
-        '```javascript',
-        'const [count, setCount] = useState(0)',
-        'const [name, setName] = useState("")',
-        '```',
-        '',
-        '## 2. Object Destructuring',
-        '```javascript',
-        'const user = { name: "Manoj", age: 25, city: "Mumbai" }',
-        'const { name, age, city } = user',
-        '',
-        '// Rename',
-        'const { name: userName } = user',
-        '',
-        '// Default values',
-        'const { score = 0 } = user',
-        '',
-        '// Nested',
-        'const { address: { city, state } } = student',
-        '```',
-        '',
-        '## React Connection — Props',
-        '```javascript',
-        'const CourseCard = ({ title, description, level }) => (',
-        '  <div>',
-        '    <h2>{title}</h2>',
-        '    <p>{description}</p>',
-        '  </div>',
-        ')',
-        '```',
-        '',
-        '## 3. Rest Operator',
-        '```javascript',
-        'const [first, ...rest] = [1, 2, 3, 4, 5]',
-        'const { name, ...otherDetails } = user',
-        'const sum = (...numbers) => numbers.reduce((t, n) => t + n, 0)',
-        '```',
-        '',
-        '## 4. Spread Operator',
-        '```javascript',
-        'const combined = [...arr1, ...arr2]',
-        'const copy = [...original]',
-        'const updated = { ...user, age: 26 }',
-        'const merged = { ...obj1, ...obj2 }',
-        '```',
-        '',
-        '## React Connection — State Updates',
-        '```javascript',
-        'setUser({ ...user, age: 26 })',
-        'setTodos([...todos, newTodo])',
-        'setTodos(todos.filter(t => t.id !== id))',
-        '```',
-        '',
-        '## Common Mistakes',
-        '1. Mutating state directly instead of spreading',
-        '2. Forgetting spread only does shallow copy',
-        '3. Putting rest anywhere except last position',
-        '',
-        '## Pro Tips',
-        '1. Remove sensitive fields: const { password, ...safeUser } = user',
-        '2. Pass all props: const Button = ({ label, ...props }) => <button {...props}>',
-        '3. Spread into function args: Math.max(...numbers)',
-        '',
-        '## Interview Questions',
-        'Q1. Difference between rest and spread?',
-        'Answer: Spread expands into individual items. Rest collects items into one array/object.',
-        '',
-        'Q2. Deep or shallow copy?',
-        'Answer: Shallow only. Nested objects still share reference.',
-        '',
-        'Q3. How to update one state property?',
-        'Answer: setUser({ ...user, age: 26 })',
-        '',
-        '## Exercises',
-        'Exercise 1 - Easy: Destructure object and array',
-        'Exercise 2 - Medium: Rewrite component using prop destructuring',
-        'Exercise 3 - Hard: Write 4 state update functions',
-      ].join('\n'),
-    })
-    console.log('  Lesson 2: Destructuring and Spread')
-    totalLessons++
-
-    await Lesson.create({
-      title: 'Array Methods',
-      order: 3,
-      duration: 25,
-      isFree: false,
-      thumbnail: JS_LESSON_IMG,
-      module: mod1._id,
-      course: course._id,
-      isPublished: true,
-      videoUrl: '',
-      content: [
-        '# Array Methods — map, filter, reduce',
-        '',
-        '## Introduction',
-        'These three methods are the backbone of React development.',
-        'map = transform every item',
-        'filter = keep only matching items',
-        'reduce = combine everything into one value',
-        '',
-        '## 1. map',
-        '```javascript',
-        'const doubled = [1,2,3,4,5].map(n => n * 2)',
-        '// [2, 4, 6, 8, 10]',
-        '```',
-        '',
-        '## React — Rendering Lists',
-        '```javascript',
-        'courses.map(course => (',
-        '  <CourseCard key={course._id} title={course.title} />',
-        '))',
-        '```',
-        '',
-        '## 2. filter',
-        '```javascript',
-        'const evens = [1,2,3,4,5,6].filter(n => n % 2 === 0)',
-        '// [2, 4, 6]',
-        '',
-        'const passed = students.filter(s => s.passed)',
-        '```',
-        '',
-        '## React — Deleting from State',
-        '```javascript',
-        'setTodos(todos.filter(todo => todo.id !== id))',
-        '```',
-        '',
-        '## 3. reduce',
-        '```javascript',
-        'const sum = [1,2,3,4,5].reduce((total, n) => total + n, 0)',
-        '// 15',
-        '```',
-        '',
-        '## 4. Other Methods',
-        '```javascript',
-        'arr.find(n => n > 4)      // first match',
-        'arr.findIndex(n => n > 4) // index of first match',
-        'arr.some(n => n > 8)      // at least one matches',
-        'arr.every(n => n > 0)     // all match',
-        'arr.includes(5)            // contains value',
-        '[...arr].sort((a, b) => a - b) // sorted copy',
-        '```',
-        '',
-        '## 5. Method Chaining',
-        '```javascript',
-        'const result = students',
-        '  .filter(s => s.city === "Mumbai")',
-        '  .filter(s => s.score >= 50)',
-        '  .sort((a, b) => b.score - a.score)',
-        '  .map(s => s.name)',
-        '```',
-        '',
-        '## Common Mistakes',
-        '1. Forgetting return statement inside map curly braces',
-        '2. Mutating array with sort — copy first with spread',
-        '3. Missing key prop in React map',
-        '4. Missing initial value in reduce',
-        '',
-        '## Pro Tips',
-        '1. map same length, filter shorter, reduce any type',
-        '2. Use IDs as keys never index',
-        '3. flatMap when map produces nested arrays',
-        '4. Chain max 3 methods for readability',
-        '',
-        '## Interview Questions',
-        'Q1. map vs forEach?',
-        'Answer: map returns new array. forEach returns undefined.',
-        '',
-        'Q2. Why not use index as key?',
-        'Answer: Indices change on reorder/delete causing incorrect re-renders.',
-        '',
-        'Q3. What does reduce return?',
-        'Answer: Single accumulated value of any type.',
-        '',
-        '## Exercises',
-        'Exercise 1 - Easy: filter evens, square all, sum all, filter > 5',
-        'Exercise 2 - Medium: filter in-stock, get electronics names, total value',
-        'Exercise 3 - Hard: total revenue, unique customers, most popular course',
-      ].join('\n'),
-    })
-    console.log('  Lesson 3: Array Methods')
-    totalLessons++
-
-    await Lesson.create({
-      title: 'Async JavaScript',
-      order: 4,
-      duration: 30,
-      isFree: false,
-      thumbnail: JS_LESSON_IMG,
-      module: mod1._id,
-      course: course._id,
-      isPublished: true,
-      videoUrl: '',
-      content: [
-        '# Async JavaScript — Promises and Async/Await',
-        '',
-        '## Introduction',
-        'React apps fetch data from APIs constantly. Async JavaScript is essential.',
-        'Think of it like a token number system — you can do other things while waiting.',
-        '',
-        '## 1. The Problem',
-        'Synchronous code blocks everything while waiting.',
-        'Asynchronous code lets other code run while waiting.',
-        '',
-        '## 2. Promises',
-        '```javascript',
-        'fetch("/api/courses")',
-        '  .then(response => response.json())',
-        '  .then(data => console.log(data))',
-        '  .catch(error => console.error(error))',
-        '  .finally(() => setLoading(false))',
-        '```',
-        '',
-        '## 3. Async/Await',
-        '```javascript',
-        'const fetchCourses = async () => {',
-        '  try {',
-        '    const response = await fetch("/api/courses")',
-        '    if (!response.ok) throw new Error("Failed")',
-        '    const data = await response.json()',
-        '    return data',
-        '  } catch (error) {',
-        '    console.error(error.message)',
-        '  } finally {',
-        '    setLoading(false)',
-        '  }',
-        '}',
-        '```',
-        '',
-        '## 4. Async in React useEffect',
-        '```javascript',
-        'useEffect(() => {',
-        '  const fetchData = async () => {',
-        '    try {',
-        '      setLoading(true)',
-        '      const res = await fetch("/api/courses")',
-        '      const data = await res.json()',
-        '      setCourses(data)',
-        '    } catch (err) {',
-        '      setError(err.message)',
-        '    } finally {',
-        '      setLoading(false)',
-        '    }',
-        '  }',
-        '  fetchData()',
-        '}, [])',
-        '```',
-        '',
-        '## 5. Promise.all — Parallel Requests',
-        '```javascript',
-        'const [users, courses] = await Promise.all([',
-        '  fetchUsers(),',
-        '  fetchCourses()',
-        '])',
-        '```',
-        '',
-        '## Common Mistakes',
-        '1. Making useEffect itself async — create inner async function instead',
-        '2. Not handling errors with try/catch',
-        '3. Running requests sequentially when they could be parallel',
-        '',
-        '## Pro Tips',
-        '1. Always use try/catch with async/await',
-        '2. Check response.ok before parsing JSON',
-        '3. Use Promise.all for parallel independent requests',
-        '4. Use AbortController to cancel requests on unmount',
-        '',
-        '## Interview Questions',
-        'Q1. Difference between sync and async?',
-        'Answer: Sync blocks execution line by line. Async lets program continue while waiting.',
-        '',
-        'Q2. Three states of a Promise?',
-        'Answer: Pending, fulfilled, rejected.',
-        '',
-        'Q3. Why not make useEffect async directly?',
-        'Answer: useEffect expects nothing or a cleanup function returned. Async returns a Promise.',
-        '',
-        'Q4. Promise.all vs Promise.allSettled?',
-        'Answer: Promise.all rejects if any fail. allSettled waits for all regardless.',
-        '',
-        '## Exercises',
-        'Exercise 1 - Easy: Convert .then().catch() chain to async/await',
-        'Exercise 2 - Medium: Build fetch function with retry on failure',
-        'Exercise 3 - Hard: React component fetching user and courses in parallel',
-      ].join('\n'),
-    })
-    console.log('  Lesson 4: Async JavaScript')
-    totalLessons++
+    for (const lessonData of module1Lessons) {
+      await Lesson.create({
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
+        thumbnail: JS_LESSON_IMG,
+        module: mod1._id,
+        course: course._id,
+        isPublished: true,
+        videoUrl: '',
+        content: lessonData.content,
+      })
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
+      totalLessons++
+    }
 
     await Project.create({
       title: 'Movie Search App',
@@ -501,7 +144,7 @@ const seed = async () => {
         ],
       },
     })
-    console.log('  Project: Movie Search App')
+    console.log('  🚀 Project: Movie Search App')
 
     // ════════════════════════════════════════════════════════════
     // MODULE 2 — React Fundamentals
@@ -514,26 +157,22 @@ const seed = async () => {
       totalLessons: 4,
       isPublished: true,
     })
-    console.log('Module 2 created')
+    console.log('\n📦 Module 2: React Fundamentals')
 
-    const reactLessons = [
-      { title: 'What is React & JSX', order: 1, isFree: true, duration: 20 },
-      { title: 'Components & Props', order: 2, isFree: false, duration: 25 },
-      { title: 'State & Events', order: 3, isFree: false, duration: 30 },
-      { title: 'Lists & Conditional Rendering', order: 4, isFree: false, duration: 25 },
-    ]
-
-    for (const lesson of reactLessons) {
+    for (const lessonData of module2Lessons) {
       await Lesson.create({
-        ...lesson,
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
         thumbnail: REACT_LESSON_IMG,
         module: mod2._id,
         course: course._id,
         isPublished: true,
         videoUrl: '',
-        content: 'Full content coming soon for: ' + lesson.title,
+        content: lessonData.content,
       })
-      console.log('  Lesson: ' + lesson.title)
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
       totalLessons++
     }
 
@@ -568,7 +207,7 @@ const seed = async () => {
         ],
       },
     })
-    console.log('  Project: Todo List App')
+    console.log('  🚀 Project: Todo List App')
 
     // ════════════════════════════════════════════════════════════
     // MODULE 3 — React Hooks
@@ -581,26 +220,22 @@ const seed = async () => {
       totalLessons: 4,
       isPublished: true,
     })
-    console.log('Module 3 created')
+    console.log('\n📦 Module 3: React Hooks')
 
-    const hooksLessons = [
-      { title: 'useState & useEffect', order: 1, isFree: true, duration: 30 },
-      { title: 'useRef & useMemo', order: 2, isFree: false, duration: 25 },
-      { title: 'Custom Hooks', order: 3, isFree: false, duration: 30 },
-      { title: 'Context API & useContext', order: 4, isFree: false, duration: 30 },
-    ]
-
-    for (const lesson of hooksLessons) {
+    for (const lessonData of module3Lessons) {
       await Lesson.create({
-        ...lesson,
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
         thumbnail: HOOKS_LESSON_IMG,
         module: mod3._id,
         course: course._id,
         isPublished: true,
         videoUrl: '',
-        content: 'Full content coming soon for: ' + lesson.title,
+        content: lessonData.content,
       })
-      console.log('  Lesson: ' + lesson.title)
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
       totalLessons++
     }
 
@@ -635,39 +270,35 @@ const seed = async () => {
         ],
       },
     })
-    console.log('  Project: Weather Dashboard')
+    console.log('  🚀 Project: Weather Dashboard')
 
     // ════════════════════════════════════════════════════════════
     // MODULE 4 — Advanced React
     // ════════════════════════════════════════════════════════════
     const mod4 = await Module.create({
       title: 'Advanced React',
-      description: 'React Router, performance optimization, error boundaries and TailwindCSS.',
+      description: 'React Router, performance optimization, state management patterns and building a complete app.',
       order: 4,
       course: course._id,
       totalLessons: 4,
       isPublished: true,
     })
-    console.log('Module 4 created')
+    console.log('\n📦 Module 4: Advanced React')
 
-    const advLessons = [
-      { title: 'React Router v6', order: 1, isFree: true, duration: 30 },
-      { title: 'Performance Optimization', order: 2, isFree: false, duration: 30 },
-      { title: 'Error Boundaries & Suspense', order: 3, isFree: false, duration: 25 },
-      { title: 'React with TailwindCSS', order: 4, isFree: false, duration: 35 },
-    ]
-
-    for (const lesson of advLessons) {
+    for (const lessonData of module4Lessons) {
       await Lesson.create({
-        ...lesson,
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
         thumbnail: ADV_LESSON_IMG,
         module: mod4._id,
         course: course._id,
         isPublished: true,
         videoUrl: '',
-        content: 'Full content coming soon for: ' + lesson.title,
+        content: lessonData.content,
       })
-      console.log('  Lesson: ' + lesson.title)
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
       totalLessons++
     }
 
@@ -704,25 +335,390 @@ const seed = async () => {
         ],
       },
     })
-    console.log('  Project: Full Blog Platform')
+    console.log('  🚀 Project: Full Blog Platform')
+
+    // ════════════════════════════════════════════════════════════
+    // MODULE 5 — API Integration
+    // ════════════════════════════════════════════════════════════
+    const mod5 = await Module.create({
+      title: 'API Integration',
+      description: 'Learn Axios, React Query, loading states and pagination for real-world data fetching.',
+      order: 5,
+      course: course._id,
+      totalLessons: 4,
+      isPublished: true,
+    })
+    console.log('\n📦 Module 5: API Integration')
+
+    for (const lessonData of module5Lessons) {
+      await Lesson.create({
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
+        thumbnail: API_IMG,
+        module: mod5._id,
+        course: course._id,
+        isPublished: true,
+        videoUrl: '',
+        content: lessonData.content,
+      })
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
+      totalLessons++
+    }
+
+    await Project.create({
+      title: 'GitHub Profile Finder',
+      description: 'Build a GitHub profile search app using Axios and React Query.',
+      thumbnail: GITHUB_IMG,
+      difficulty: 'medium',
+      estimatedHours: 5,
+      techStack: ['React', 'Axios', 'React Query', 'TailwindCSS', 'GitHub API'],
+      requirements: [
+        'Search GitHub users by username',
+        'Display user avatar, bio, followers and following',
+        'Show list of public repositories',
+        'Sort repos by stars or last updated',
+        'Paginate through repositories',
+        'Handle loading and error states',
+        'Cache results with React Query',
+        'Debounce search input',
+      ],
+      module: mod5._id,
+      course: course._id,
+      isPublished: true,
+      testSuite: {
+        framework: 'jest',
+        tests: [
+          { name: 'Search input exists', description: 'Username input is in DOM' },
+          { name: 'Profile displays', description: 'User data shown after search' },
+          { name: 'Repos list renders', description: 'Repository cards rendered' },
+          { name: 'Loading state works', description: 'Skeleton shown during fetch' },
+          { name: 'Error handled', description: 'Error message for invalid username' },
+        ],
+      },
+    })
+    console.log('  🚀 Project: GitHub Profile Finder')
+
+    // ════════════════════════════════════════════════════════════
+    // MODULE 6 — State Management
+    // ════════════════════════════════════════════════════════════
+    const mod6 = await Module.create({
+      title: 'State Management',
+      description: 'Master Redux Toolkit, Zustand and state management patterns for large React apps.',
+      order: 6,
+      course: course._id,
+      totalLessons: 4,
+      isPublished: true,
+    })
+    console.log('\n📦 Module 6: State Management')
+
+    for (const lessonData of module6Lessons) {
+      await Lesson.create({
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
+        thumbnail: STATE_IMG,
+        module: mod6._id,
+        course: course._id,
+        isPublished: true,
+        videoUrl: '',
+        content: lessonData.content,
+      })
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
+      totalLessons++
+    }
+
+    await Project.create({
+      title: 'E-Commerce Cart',
+      description: 'Build a full e-commerce product listing and cart using Redux Toolkit.',
+      thumbnail: ECOMMERCE_IMG,
+      difficulty: 'medium',
+      estimatedHours: 6,
+      techStack: ['React', 'Redux Toolkit', 'React Query', 'TailwindCSS'],
+      requirements: [
+        'Product listing with search and filter',
+        'Add to cart and remove from cart',
+        'Update product quantity in cart',
+        'Show cart total and item count in navbar',
+        'Persist cart to localStorage',
+        'Checkout summary page',
+        'Empty cart state',
+        'Responsive design',
+      ],
+      module: mod6._id,
+      course: course._id,
+      isPublished: true,
+      testSuite: {
+        framework: 'jest',
+        tests: [
+          { name: 'Products render', description: 'Product cards displayed' },
+          { name: 'Add to cart works', description: 'Item added to cart' },
+          { name: 'Cart count updates', description: 'Navbar badge shows correct count' },
+          { name: 'Remove works', description: 'Item removed from cart' },
+          { name: 'Total calculated', description: 'Cart total is correct' },
+        ],
+      },
+    })
+    console.log('  🚀 Project: E-Commerce Cart')
+
+    // ════════════════════════════════════════════════════════════
+    // MODULE 7 — Authentication
+    // ════════════════════════════════════════════════════════════
+    const mod7 = await Module.create({
+      title: 'Authentication',
+      description: 'Implement JWT authentication, protected routes, role based access and OAuth.',
+      order: 7,
+      course: course._id,
+      totalLessons: 4,
+      isPublished: true,
+    })
+    console.log('\n📦 Module 7: Authentication')
+
+    for (const lessonData of module7Lessons) {
+      await Lesson.create({
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
+        thumbnail: AUTH_IMG,
+        module: mod7._id,
+        course: course._id,
+        isPublished: true,
+        videoUrl: '',
+        content: lessonData.content,
+      })
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
+      totalLessons++
+    }
+
+    await Project.create({
+      title: 'Auth Dashboard',
+      description: 'Build a full authentication system with JWT, protected routes and role based access.',
+      thumbnail: DASHBOARD_IMG,
+      difficulty: 'hard',
+      estimatedHours: 7,
+      techStack: ['React', 'React Router', 'JWT', 'Axios', 'TailwindCSS'],
+      requirements: [
+        'Register with name, email and password',
+        'Login with JWT stored in localStorage',
+        'Protected dashboard route',
+        'Role based navigation (admin vs student)',
+        'Auto refresh expired tokens',
+        'Logout clears all tokens',
+        'Redirect to intended page after login',
+        'Show user avatar and name in navbar',
+      ],
+      module: mod7._id,
+      course: course._id,
+      isPublished: true,
+      testSuite: {
+        framework: 'jest',
+        tests: [
+          { name: 'Register works', description: 'New user created' },
+          { name: 'Login works', description: 'Token stored after login' },
+          { name: 'Protected route works', description: 'Redirect to login if not auth' },
+          { name: 'Logout works', description: 'Token removed on logout' },
+          { name: 'Role check works', description: 'Admin sees different UI' },
+        ],
+      },
+    })
+    console.log('  🚀 Project: Auth Dashboard')
+
+    // ════════════════════════════════════════════════════════════
+    // MODULE 8 — Production React
+    // ════════════════════════════════════════════════════════════
+    const mod8 = await Module.create({
+      title: 'Production React',
+      description: 'TypeScript, testing, performance optimization and deploying to Vercel and Railway.',
+      order: 8,
+      course: course._id,
+      totalLessons: 4,
+      isPublished: true,
+    })
+    console.log('\n📦 Module 8: Production React')
+
+    for (const lessonData of module8Lessons) {
+      await Lesson.create({
+        title: lessonData.title,
+        order: lessonData.order,
+        duration: lessonData.duration,
+        isFree: lessonData.isFree,
+        thumbnail: DEPLOY_IMG,
+        module: mod8._id,
+        course: course._id,
+        isPublished: true,
+        videoUrl: '',
+        content: lessonData.content,
+      })
+      console.log('  ✅ Lesson ' + lessonData.order + ': ' + lessonData.title)
+      totalLessons++
+    }
+
+    await Project.create({
+      title: 'Full Stack React App',
+      description: 'Build and deploy a complete full stack React application with TypeScript and tests.',
+      thumbnail: FULLSTACK_IMG,
+      difficulty: 'hard',
+      estimatedHours: 10,
+      techStack: ['React', 'TypeScript', 'Vitest', 'React Query', 'Redux Toolkit', 'TailwindCSS', 'Vercel'],
+      requirements: [
+        'TypeScript throughout entire codebase',
+        'At least 10 unit and integration tests',
+        'All routes code split with lazy loading',
+        'Lighthouse performance score above 90',
+        'Deployed to Vercel',
+        'API deployed to Railway',
+        'Environment variables configured',
+        'README with setup instructions',
+      ],
+      module: mod8._id,
+      course: course._id,
+      isPublished: true,
+      testSuite: {
+        framework: 'playwright',
+        tests: [
+          { name: 'App loads', description: 'Homepage renders without errors' },
+          { name: 'Auth flow works', description: 'Login and logout functional' },
+          { name: 'Data fetches', description: 'API calls work in production' },
+          { name: 'Routes work', description: 'All pages accessible' },
+          { name: 'TypeScript compiles', description: 'No type errors in build' },
+        ],
+      },
+    })
+    console.log('  🚀 Project: Full Stack React App')
+
+    // ════════════════════════════════════════════════════════════
+    // CAPSTONE MODULE
+    // ════════════════════════════════════════════════════════════
+    const capstoneModule = await Module.create({
+      title: 'Capstone Projects',
+      description: 'Apply everything you have learned by building two major real-world projects.',
+      order: 9,
+      course: course._id,
+      totalLessons: 0,
+      isPublished: true,
+    })
+    console.log('\n🏆 Capstone Module')
+
+    await Project.create({
+      title: 'DevConnect — Developer Job Board',
+      description: 'Build a full-featured developer job board and portfolio platform.',
+      thumbnail: DEVCONNECT_IMG,
+      difficulty: 'hard',
+      estimatedHours: 12,
+      isCapstone: true,
+      techStack: ['React', 'React Router v6', 'Redux Toolkit', 'React Query', 'Axios', 'JWT', 'TailwindCSS'],
+      requirements: [
+        'User registration and login with JWT',
+        'Two roles — developer and company',
+        'Protected routes based on role',
+        'Developer profile with bio, skills and avatar',
+        'Add portfolio projects with GitHub links',
+        'Browse and search job listings',
+        'Apply for jobs with one click',
+        'Track application status',
+        'Company profile with logo and description',
+        'Post new job listings',
+        'View and manage applicants',
+        'Search and filter jobs',
+        'Pagination for job listings',
+        'Responsive design for all screen sizes',
+        'Toast notifications for all actions',
+      ],
+      module: capstoneModule._id,
+      course: course._id,
+      isPublished: true,
+      testSuite: {
+        framework: 'playwright',
+        tests: [
+          { name: 'Register as developer', description: 'Developer account created' },
+          { name: 'Register as company', description: 'Company account created' },
+          { name: 'Post a job', description: 'Company can post job listing' },
+          { name: 'Apply for job', description: 'Developer can apply for job' },
+          { name: 'Search jobs', description: 'Filter jobs by keyword' },
+          { name: 'View applications', description: 'Company sees applicants' },
+          { name: 'Profile page loads', description: 'Developer profile renders' },
+          { name: 'Protected routes work', description: 'Redirect if not logged in' },
+          { name: 'Pagination works', description: 'Load more jobs works' },
+          { name: 'Responsive layout', description: 'Works on mobile screen' },
+        ],
+      },
+    })
+    console.log('  🚀 Capstone 1: DevConnect')
+
+    await Project.create({
+      title: 'ShopEase — E-Commerce Platform',
+      description: 'Build a complete e-commerce platform with product listings, cart, checkout and admin dashboard.',
+      thumbnail: SHOPEASE_IMG,
+      difficulty: 'hard',
+      estimatedHours: 15,
+      isCapstone: true,
+      techStack: ['React', 'TypeScript', 'Redux Toolkit', 'React Query', 'React Router v6', 'JWT', 'TailwindCSS', 'React Hook Form'],
+      requirements: [
+        'Register, login and logout with JWT',
+        'User profile with avatar and address book',
+        'Admin role with separate dashboard',
+        'Product listing with grid and list view',
+        'Search products by name',
+        'Filter by category, price range and rating',
+        'Sort by price, rating and newest',
+        'Infinite scroll or pagination',
+        'Product detail page with image gallery',
+        'Product reviews and ratings',
+        'Add to cart with quantity selector',
+        'Persist cart in localStorage',
+        'Wishlist — save products for later',
+        'Multi-step checkout flow',
+        'Order history and status tracking',
+        'Admin product management',
+        'Admin order management',
+        'TypeScript throughout entire codebase',
+        'Fully responsive design',
+        'Loading skeletons for all data',
+      ],
+      module: capstoneModule._id,
+      course: course._id,
+      isPublished: true,
+      testSuite: {
+        framework: 'playwright',
+        tests: [
+          { name: 'Products load', description: 'Product grid renders on home' },
+          { name: 'Search works', description: 'Products filtered by search term' },
+          { name: 'Filter works', description: 'Products filtered by category' },
+          { name: 'Add to cart', description: 'Item added and cart count updates' },
+          { name: 'Cart persists', description: 'Cart survives page refresh' },
+          { name: 'Checkout flow', description: 'Complete checkout without errors' },
+          { name: 'Order placed', description: 'Order confirmation page shows' },
+          { name: 'Order history', description: 'Previous orders listed' },
+          { name: 'Admin can add product', description: 'New product appears in listing' },
+          { name: 'TypeScript compiles', description: 'No type errors in build' },
+        ],
+      },
+    })
+    console.log('  🚀 Capstone 2: ShopEase')
 
     // ── Update course totals ─────────────────────────────────────
+    const totalModules = await Module.countDocuments({ course: course._id })
     await Course.findByIdAndUpdate(course._id, {
-      totalModules: 4,
+      totalModules,
       totalLessons,
     })
 
-    console.log('')
-    console.log('Seeding complete!')
-    console.log('Course: React.js Complete Guide')
-    console.log('Modules: 4')
-    console.log('Lessons: ' + totalLessons)
-    console.log('Projects: 4')
-    console.log('Images: Unsplash free images loaded')
+    console.log('\n════════════════════════════════════════════════')
+    console.log('✅ Seeding complete!')
+    console.log('📚 Course:    React Developer Complete Course')
+    console.log('📦 Modules:   ' + totalModules)
+    console.log('📖 Lessons:   ' + totalLessons)
+    console.log('🚀 Projects:  10 (8 module + 2 capstone)')
+    console.log('🏅 Badges:    ' + badgeDefinitions.length)
+    console.log('════════════════════════════════════════════════')
 
     process.exit(0)
   } catch (err) {
-    console.error('Seeding failed: ' + err.message)
+    console.error('❌ Seeding failed: ' + err.message)
+    console.error(err)
     process.exit(1)
   }
 }
