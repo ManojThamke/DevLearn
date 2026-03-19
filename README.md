@@ -6,8 +6,8 @@
 
 ## 🚀 Live Demo
 
-- **Frontend:** Coming soon (Vercel)
-- **Backend:** Coming soon (Railway)
+- **Frontend:** https://dev-learn-nine.vercel.app (Vercel)
+- **Backend:** https://devlearn-production.up.railway.app (Railway)
 - **GitHub:** https://github.com/ManojThamke/DevLearn
 
 ---
@@ -257,6 +257,38 @@ http://localhost:5173
 
 ---
 
+## 🌐 Production Deployment
+
+DevLearn is deployed using **free-tier services**:
+- **Frontend:** Vercel (https://dev-learn-nine.vercel.app)
+- **Backend:** Railway (https://devlearn-production.up.railway.app)
+- **Database:** MongoDB Atlas Free Tier (5GB shared cluster)
+- **Cache:** Railway Redis Add-on
+
+### Deployment Setup Files
+- `vercel.json` - Vercel build configuration
+- `server/Procfile` - Railway start command
+- `server/.env.example` - Environment variables template
+
+### Production Environment Variables
+
+**MongoDB Atlas:**
+- Create free cluster on https://www.mongodb.com/cloud/atlas
+- Get connection string: `MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/devlearn`
+
+**Railway:**
+- Create account at https://railway.app
+- Connect GitHub repository
+- Set `CLIENT_URL=https://dev-learn-nine.vercel.app` (your Vercel URL)
+- Redis automatically added as add-on
+
+**Vercel:**
+- Create account at https://vercel.com
+- Connect GitHub repository
+- Set `VITE_API_URL=https://devlearn-production.up.railway.app/api`
+
+---
+
 ## 🗺️ API Routes
 
 ### Auth
@@ -363,9 +395,9 @@ POST   /api/ai/evaluate
 - [x] 5 Complete courses with detailed lessons (React, JavaScript Advanced, Node.js, TypeScript, Next.js)
 - [x] Badge & Certificate system with database models
 - [x] Course thumbnails with error handling
-- [ ] AI code evaluation system (setup ready, testing needed)
-- [ ] Submission score dashboard
-- [ ] Deploy to Vercel + Railway
+- [x] AI code evaluation system (Gemini API integrated)
+- [x] Submission score dashboard
+- [x] Production deployment (Vercel + Railway + MongoDB Atlas)
 
 ---
 
