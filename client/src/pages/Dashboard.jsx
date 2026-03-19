@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
@@ -159,21 +159,54 @@ const EmptyEnrollment = () => (
 // ── Main Page ──────────────────────────────────────────────────────
 const Dashboard = () => {
   const { user } = useAuth()
+  const location = useLocation()
   const [enrollments, setEnrollments] = useState([])
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState({ enrolledCourses: 0, totalLessonsCompleted: 0 })
 
+  const fetchProgress = async () => {
+    try {
+      setLoading(true)
+
+      // Fetch profile stats (more reliable)
+      const profileRes = await api.get('/profile')
+      console.log('Profile stats:', profileRes.data.stats)
+      setStats(profileRes.data.stats || { enrolledCourses: 0, totalLessonsCompleted: 0 })
+
+      // Fetch progress/enrollments for course cards
+      const progressRes = await api.get('/progress')
+      console.log('Progress enrollments:', progressRes.data)
+      setEnrollments(progressRes.data.enrollments || [])
+    } catch (err) {
+      console.error('Dashboard fetch error:', err.response?.data || err.message)
+      setEnrollments([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Fetch on mount
   useEffect(() => {
-    const fetchProgress = async () => {
-      try {
-        const res = await api.get('/progress')
-        setEnrollments(res.data.enrollments || [])
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setLoading(false)
+    fetchProgress()
+  }, [])
+
+  // Refetch when navigating to dashboard
+  useEffect(() => {
+    if (location.pathname === '/dashboard') {
+      fetchProgress()
+    }
+  }, [location])
+
+  // Refresh when page becomes visible (tab switch)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchProgress()
       }
     }
-    fetchProgress()
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [])
 
   // Computed stats
@@ -227,15 +260,25 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex items-center gap-3 bg-white/10 border border-white/10 rounded-2xl px-5 py-3"
+              className="flex items-center gap-4"
             >
-              <div className="text-right">
-                <p className="text-white font-bold text-xl">
-                  {user?.xpTotal || 0} XP
-                </p>
-                <p className="text-gray-400 text-xs">Total Points</p>
+              <button
+                onClick={fetchProgress}
+                disabled={loading}
+                className="hidden md:flex items-center gap-2 bg-white/10 border border-white/20 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl transition-all disabled:opacity-50"
+              >
+                <span className={loading ? 'animate-spin' : ''}>🔄</span>
+                Refresh
+              </button>
+              <div className="flex items-center gap-3 bg-white/10 border border-white/10 rounded-2xl px-5 py-3">
+                <div className="text-right">
+                  <p className="text-white font-bold text-xl">
+                    {user?.xpTotal || 0} XP
+                  </p>
+                  <p className="text-gray-400 text-xs">Total Points</p>
+                </div>
+                <div className="text-3xl">⭐</div>
               </div>
-              <div className="text-3xl">⭐</div>
             </motion.div>
           </div>
         </div>

@@ -26,9 +26,15 @@
 
 ## ✨ Features
 
+### 📚 Courses & Content
+- **5 Complete Courses:** React, JavaScript Advanced, Node.js, TypeScript, Next.js
+- **23 Modules** with structured learning paths
+- **88 Detailed Lessons** with code examples and best practices
+- **28 Real-World Projects** for hands-on practice
+- Markdown lesson content with syntax highlighted code blocks
+
 ### 🎓 Learning
 - Structured courses with modules and lessons
-- Markdown lesson content with syntax highlighted code blocks
 - Reading progress bar as you scroll
 - Mark lessons as complete and track progress
 - Dark mode lesson viewer
@@ -38,12 +44,17 @@
 ### 🚀 Projects
 - Submit projects via GitHub URL
 - Submit projects via ZIP file upload (up to 100MB)
-- AI evaluation of submitted code
+- AI evaluation of submitted code (Gemini powered)
 - Track all submissions with attempt history
 
+### 🏆 Achievements
+- **Badge System** - Earn badges for completing courses and milestones
+- **Certificates** - Generate certificates upon course completion
+- **XP Points** - Gain experience points for completed lessons and projects
+
 ### 🤖 AI
-- AI assistant powered by Google Gemini 2.5 Flash
-- Ask questions about React, JavaScript, Node.js
+- AI assistant powered by Google Gemini API
+- Ask questions about React, JavaScript, Node.js, TypeScript, Next.js
 - Get code reviews and interview prep help
 - Quick prompt suggestions for common questions
 
@@ -61,6 +72,8 @@
 - Lessons completed counter
 - Animated progress rings per course
 - Quick action buttons
+- Achievement badges and certificates
+
 
 ---
 
@@ -84,12 +97,23 @@
 | JWT | Authentication |
 | bcryptjs | Password hashing |
 | Multer | File uploads |
+| Bull | Job queue |
+| Redis | Caching & queue |
 
-### AI & Services
+### AI & External Services
 | Technology | Purpose |
 |---|---|
-| Google Gemini 2.5 Flash | AI assistant + code evaluation |
+| Google Gemini API | AI assistant + code evaluation |
+| Docker | Container support for code evaluation |
+| GitHub API | Repository access for submissions |
 | MongoDB Atlas | Cloud database |
+
+### Development Tools
+| Technology | Purpose |
+|---|---|
+| dotenv | Environment variables |
+| CORS | Cross-origin requests |
+| Morgan | Request logging |
 
 ---
 
@@ -129,6 +153,9 @@ DevLearn/
     │   ├── progress.controller.js
     │   ├── profile.controller.js
     │   ├── submission.controller.js
+    │   ├── project.controller.js
+    │   ├── badge.controller.js
+    │   ├── certificate.controller.js
     │   └── ai.controller.js
     ├── models/
     │   ├── User.model.js
@@ -139,7 +166,10 @@ DevLearn/
     │   ├── Submission.model.js
     │   ├── Score.model.js
     │   ├── Progress.model.js
-    │   └── Enrollment.model.js
+    │   ├── Enrollment.model.js
+    │   ├── Badge.model.js
+    │   ├── UserBadge.model.js
+    │   └── Certificate.model.js
     ├── routes/
     │   ├── auth.routes.js
     │   ├── course.routes.js
@@ -148,15 +178,26 @@ DevLearn/
     │   ├── profile.routes.js
     │   ├── submission.routes.js
     │   ├── project.routes.js
+    │   ├── badge.routes.js
+    │   ├── certificate.routes.js
     │   └── ai.routes.js
     ├── middleware/
     │   ├── auth.middleware.js
     │   └── upload.middleware.js
     ├── services/
-    │   └── ai.service.js
+    │   ├── ai.service.js
+    │   ├── evaluation.service.js
+    │   ├── github.service.js
+    │   └── docker.service.js
     ├── data/
-    │   └── lessons.js
+    │   ├── module1-8.lessons.js (React course)
+    │   ├── nodejs-module1-3.lessons.js
+    │   ├── js-adv-module1-4.lessons.js
+    │   ├── ts-modules.lessons.js
+    │   ├── nextjs-modules.lessons.js
+    │   └── badgeDefinitions.js
     ├── seed.js
+    ├── seed-*.js (individual course seeders)
     └── index.js
 ```
 
@@ -269,14 +310,47 @@ GET    /api/projects/:id
 GET    /api/projects/module/:moduleId
 ```
 
+### Badges
+```
+GET    /api/badges
+GET    /api/user/badges
+POST   /api/badges/:id/award
+```
+
+### Certificates
+```
+GET    /api/certificates
+GET    /api/certificates/:id
+POST   /api/certificates/generate/:courseId
+```
+
 ### AI
 ```
 POST   /api/ai/chat
+POST   /api/ai/evaluate
 ```
 
 ---
 
-## 📋 Roadmap
+## 📊 Current Database Content
+
+| Metric | Count |
+|--------|-------|
+| Courses | 5 |
+| Modules | 23 |
+| Lessons | 88 |
+| Projects | 28 |
+| Badges | 8+ |
+| Total Learning Hours | 100+ |
+
+### Courses Available
+1. **React Developer Complete Course** - 8 modules, 32 lessons, 10 projects
+2. **JavaScript Advanced Concepts** - 4 modules, 16 lessons, 4 projects
+3. **Node.js Backend Developer Complete Course** - 3 modules, 12 lessons, 3 projects
+4. **TypeScript Mastery** - 3 modules, 12 lessons, 3 projects
+5. **Next.js Full Stack Development** - 3 modules, 16 lessons, 8 projects
+
+---
 
 - [x] User authentication (register, login, JWT)
 - [x] Course catalog with search and filter
@@ -286,10 +360,11 @@ POST   /api/ai/chat
 - [x] AI assistant (Gemini powered)
 - [x] Profile page with avatar upload
 - [x] Project submission (GitHub URL + ZIP)
-- [ ] AI code evaluation system
+- [x] 5 Complete courses with detailed lessons (React, JavaScript Advanced, Node.js, TypeScript, Next.js)
+- [x] Badge & Certificate system with database models
+- [x] Course thumbnails with error handling
+- [ ] AI code evaluation system (setup ready, testing needed)
 - [ ] Submission score dashboard
-- [ ] Certificate of completion
-- [ ] More courses (Node.js, TailwindCSS, JavaScript)
 - [ ] Deploy to Vercel + Railway
 
 ---

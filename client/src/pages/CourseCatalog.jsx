@@ -5,6 +5,8 @@ import api from '../services/api'
 
 // ── Course Card ────────────────────────────────────────────────────
 const CourseCard = ({ course, index }) => {
+  const [imageLoaded, setImageLoaded] = useState(true)
+
   const levelColors = {
     beginner: 'bg-green-100 text-green-700 border-green-200',
     intermediate: 'bg-yellow-100 text-yellow-700 border-yellow-200',
@@ -17,6 +19,14 @@ const CourseCard = ({ course, index }) => {
     advanced: '⚡',
   }
 
+  const gradientMap = {
+    'react-complete-guide': 'from-blue-500 to-cyan-500',
+    'javascript-advanced': 'from-yellow-500 to-orange-500',
+    'nodejs-complete-guide': 'from-green-600 to-teal-600',
+    'typescript-mastery': 'from-blue-600 to-blue-400',
+    'nextjs-fullstack': 'from-purple-600 to-pink-500',
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -26,12 +36,16 @@ const CourseCard = ({ course, index }) => {
       className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-100 group"
     >
       {/* Thumbnail */}
-      <div className="relative overflow-hidden h-48">
-        <img
-          src={course.thumbnail}
-          alt={course.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        />
+      <div className={`relative overflow-hidden h-48 bg-gradient-to-br ${gradientMap[course.slug] || 'from-gray-700 to-gray-900'}`}>
+        {imageLoaded && course.thumbnail && (
+          <img
+            src={course.thumbnail}
+            alt={course.title}
+            onError={() => setImageLoaded(false)}
+            onLoad={() => setImageLoaded(true)}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
         {/* Level badge */}
