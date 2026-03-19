@@ -63,11 +63,20 @@ const ProgressRing = ({ percent }) => {
 // ── Course Progress Card ───────────────────────────────────────────
 const CourseProgressCard = ({ enrollment, index }) => {
   const { course, percentComplete, completedLessons, enrolledAt } = enrollment
+  const [imageLoaded, setImageLoaded] = useState(true)
 
   const levelColors = {
     beginner: 'bg-green-100 text-green-700',
     intermediate: 'bg-yellow-100 text-yellow-700',
     advanced: 'bg-red-100 text-red-700',
+  }
+
+  const gradientMap = {
+    'react-complete-guide': 'from-blue-500 to-cyan-500',
+    'javascript-advanced': 'from-yellow-500 to-orange-500',
+    'nodejs-complete-guide': 'from-green-600 to-teal-600',
+    'typescript-mastery': 'from-blue-600 to-blue-400',
+    'nextjs-fullstack': 'from-purple-600 to-pink-500',
   }
 
   return (
@@ -78,19 +87,23 @@ const CourseProgressCard = ({ enrollment, index }) => {
       className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 group"
     >
       {/* Course thumbnail */}
-      <div className="relative h-36 overflow-hidden">
-        <img
-          src={course.thumbnail}
-          alt={course.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+      <div className={`relative h-36 overflow-hidden bg-gradient-to-br ${gradientMap[course.slug] || 'from-gray-700 to-gray-900'}`}>
+        {imageLoaded && course.thumbnail && (
+          <img
+            src={course.thumbnail}
+            alt={course.title}
+            onError={() => setImageLoaded(false)}
+            onLoad={() => setImageLoaded(true)}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${levelColors[course.level]}`}>
             {course.level}
           </span>
-          <span className="text-white text-xs bg-black/40 px-2 py-1 rounded-full">
-            {completedLessons}/{course.totalLessons} lessons
+          <span className="text-white text-xs bg-black/40 px-2 py-1 rounded-full flex-shrink-0">
+            {completedLessons}/{course.totalLessons}
           </span>
         </div>
       </div>
@@ -286,7 +299,7 @@ const Dashboard = () => {
 
       {/* ── Stats ───────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 -mt-6 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           <StatCard
             icon="📚"
             label="Enrolled Courses"
@@ -320,7 +333,7 @@ const Dashboard = () => {
 
       {/* ── My Courses ──────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-4 py-10">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
             My Courses
           </h2>
@@ -333,7 +346,7 @@ const Dashboard = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 animate-pulse">
                 <div className="h-36 bg-gray-200" />
@@ -347,7 +360,7 @@ const Dashboard = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {enrollments.length === 0
               ? <EmptyEnrollment />
               : enrollments.map((enrollment, i) => (
@@ -375,17 +388,19 @@ const Dashboard = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center gap-5"
+                className="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5"
               >
-                <ProgressRing percent={enrollment.percentComplete} />
-                <div className="flex-1 min-w-0">
+                <div className="flex-shrink-0">
+                  <ProgressRing percent={enrollment.percentComplete} />
+                </div>
+                <div className="flex-1 min-w-0 w-full">
                   <h3 className="font-bold text-gray-900 truncate">
                     {enrollment.course.title}
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
                     {enrollment.completedLessons} of {enrollment.course.totalLessons} lessons done
                   </p>
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
                     {enrollment.isCompleted ? (
                       <span className="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full font-medium">
                         ✓ Completed
@@ -403,7 +418,7 @@ const Dashboard = () => {
                 </div>
                 <Link
                   to={'/courses/' + enrollment.course.slug}
-                  className="text-indigo-600 hover:text-indigo-700 text-sm font-medium flex-shrink-0"
+                  className="text-indigo-600 hover:text-indigo-700 text-sm font-medium flex-shrink-0 whitespace-nowrap"
                 >
                   View →
                 </Link>
@@ -418,12 +433,12 @@ const Dashboard = () => {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Quick Actions
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {[
             { icon: '📚', label: 'Browse Courses', to: '/courses', color: 'from-indigo-500 to-cyan-500' },
-            { icon: '🤖', label: 'Ask AI Assistant', to: '#', color: 'from-purple-500 to-pink-500', action: true },
+            { icon: '🤖', label: 'Ask AI', to: '#', color: 'from-purple-500 to-pink-500', action: true },
             { icon: '👤', label: 'Edit Profile', to: '/profile', color: 'from-orange-500 to-yellow-500' },
-            { icon: '🏆', label: 'View Certificates', to: '/certificates', color: 'from-green-500 to-teal-500' },
+            { icon: '🏆', label: 'Certificates', to: '/certificates', color: 'from-green-500 to-teal-500' },
           ].map((item, i) => (
             <motion.div
               key={i}
@@ -433,12 +448,12 @@ const Dashboard = () => {
             >
               <Link
                 to={item.to}
-                className="flex flex-col items-center gap-3 bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 group text-center"
+                className="flex flex-col items-center gap-2 bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 hover:shadow-lg transition-all duration-300 group text-center h-full"
               >
-                <div className={`w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-md`}>
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center text-lg sm:text-2xl group-hover:scale-110 transition-transform shadow-md`}>
                   {item.icon}
                 </div>
-                <span className="text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors">
+                <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-indigo-600 transition-colors line-clamp-2">
                   {item.label}
                 </span>
               </Link>

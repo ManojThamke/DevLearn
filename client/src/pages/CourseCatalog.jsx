@@ -202,21 +202,21 @@ const CourseCatalog = () => {
             </p>
 
             {/* Search */}
-            <div className="relative max-w-lg mx-auto">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+            <div className="relative max-w-lg mx-auto w-full px-4 sm:px-0">
+              <span className="absolute left-6 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400">
                 🔍
               </span>
               <input
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Search courses, topics, technologies..."
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-2xl pl-11 pr-5 py-3.5 text-sm outline-none focus:border-indigo-500 focus:bg-white/15 transition-all backdrop-blur-sm"
+                placeholder="Search courses, topics..."
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-2xl pl-11 sm:pl-11 pr-5 py-3 sm:py-3.5 text-sm outline-none focus:border-indigo-500 focus:bg-white/15 transition-all backdrop-blur-sm"
               />
               {search && (
                 <button
                   onClick={() => setSearch('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
                 >
                   ✕
                 </button>
@@ -230,13 +230,13 @@ const CourseCatalog = () => {
       <section className="max-w-7xl mx-auto px-4 py-12">
 
         {/* Filter tabs */}
-        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="flex gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
             {levels.map(level => (
               <button
                 key={level}
                 onClick={() => setSelectedLevel(level)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${
+                className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all capitalize whitespace-nowrap flex-shrink-0 ${
                   selectedLevel === level
                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
                     : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
@@ -247,7 +247,7 @@ const CourseCatalog = () => {
             ))}
           </div>
 
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm whitespace-nowrap">
             {loading ? 'Loading...' : filtered.length + ' course' + (filtered.length !== 1 ? 's' : '') + ' found'}
           </p>
         </div>
@@ -268,7 +268,7 @@ const CourseCatalog = () => {
 
         {/* Loading skeletons */}
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[1, 2, 3].map(i => <CourseSkeleton key={i} />)}
           </div>
         )}
@@ -297,7 +297,7 @@ const CourseCatalog = () => {
                 </button>
               </motion.div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {filtered.map((course, i) => (
                   <CourseCard key={course._id} course={course} index={i} />
                 ))}
